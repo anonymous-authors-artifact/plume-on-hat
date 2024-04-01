@@ -1,13 +1,13 @@
-# Supplementary Material for "Plume: Black-box Checking Weak Isolation for Highly Available Transactions"
+# Artifact for "Plume: Efficient and Complete Black-box Checking of WeakIsolation Levels"
 
-This repository contains the artifact for Plume.
+This repository includes the artifact for our submission #362.
 
 ## Repository Organization
 
 ```
-Plume
+plume-on-hat
 |-- Plume       # our prototype of Plume
-|-- Data        # experimental data in the paper
-|-- History     # histories and benchmarks uesd in the paper
-`-- TCC_TOOL    # our implementations of the competing checkers CausalC+ and TCC-Mono
+|-- Data        # experimental data presented in the paper
+|-- History     # histories and benchmarks uesd in our experiments
+`-- Tools       # our implementations of the competing checkers CausalC+ and TCC-Mono
 ```
