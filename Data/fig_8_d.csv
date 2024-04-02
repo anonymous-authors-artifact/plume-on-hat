@@ -1,4 +1,4 @@
-name,plume,dbcop,datalog,monosat,polysi,viper
-RUBiS,1.05,600.32,600.11,265.52,31.17,190.68
-TPC-C,2.97,600.55,600.07,600.07,601.01,25.28
-C-Twitter,0.9,600.24,600.01,133.33,44.56,59.71
+client num,txn per client,rd rate,key num,distribution,op per txn,tc,dbcop,datalog,monosat,polysi,viper,plume
+25,200,0.5,10000,uniform,20,16.98,577.51,600.037,71.74,109.24,600.103,1.077
+25,200,0.5,10000,zipf,20,39.577,600.06,600.027,109.353,485.597,600.173,1.543
+25,200,0.5,10000,hotspot,20,39.407,600.06,600.033,123.593,585.06,600.23,1.277

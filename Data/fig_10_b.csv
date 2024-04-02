@@ -1,3 +1,6 @@
-client num,txn per client,rd rate,key num,distribution,op per txn,type,constructing,traversal,encoding,solving
-10,200,0.5,10000,uniform,20,plume,0.398,0.08,0.0,0.0
-10,200,0.5,10000,uniform,20,dbcop,23.861,23.985,0.0,0.0
+txn per client,plume_list,elle-cc,plume_list_ra,plume_list_rc,elle-rc,elle-ra
+100,3.4,90.206,3.49,2.238,90.174,89.754
+200,8.31,147.917,8.003,4.477,145.967,145.76
+300,13.957,313.18,14.43,7.167,313.923,312.16
+400,25.577,257.537,23.073,9.807,261.763,263.44
+500,33.77,426.883,30.897,12.63,425.367,431.867
