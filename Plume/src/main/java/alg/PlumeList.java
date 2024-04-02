@@ -68,6 +68,7 @@ public class PlumeList<VarType> extends Plume<VarType, ElleHistoryLoader.ElleVal
             var writesInTxn = new HashMap<VarType, Operation<VarType, ElleHistoryLoader.ElleValue>>();
 
             for (var op: txn.getOps()) {
+                var key = new Pair<>(op.getVariable(), op.getValue());
                 op2node.put(op, node);
 
                 // if op is a read
@@ -97,29 +98,26 @@ public class PlumeList<VarType> extends Plume<VarType, ElleHistoryLoader.ElleVal
                     }
                     nearestRW.put(op.getVariable(), op);
 
-                    for (var value : op.getValue().getList()) {
-                        var key = new Pair<>(op.getVariable(), new ElleHistoryLoader.ElleValue(value, null));
-                        var write = writes.get(key);
-                        if (write != null) {
-                            // if write -> op
-                            // add op to reads
-                            reads.computeIfAbsent(key, k -> new ArrayList<>()).add(op);
+                    var write = writes.get(key);
+                    if (write != null) {
+                        // if write -> op
+                        // add op to reads
+                        reads.computeIfAbsent(key, k -> new ArrayList<>()).add(op);
 
-                            var writeNode = op2node.get(write);
-                            if (!writeNode.equals(node)) {
-                                if (!writeNode.canReachByCO(node)) {
-                                    node.updateCOReachability(writeNode);
-                                    graph.addEdge(writeNode, node, new Edge<>(Edge.Type.WR, op.getVariable()));
-                                }
-                                WREdges.computeIfAbsent(op.getVariable(), k -> new HashSet<>()).add(new Pair<>(writeNode, node));
-                                WRNodesToOp.computeIfAbsent(new Pair<>(writeNode, node), wr -> new ArrayList<>()).add(new Pair<>(write, op));
+                        var writeNode = op2node.get(write);
+                        if (!writeNode.equals(node)) {
+                            if (!writeNode.canReachByCO(node)) {
+                                node.updateCOReachability(writeNode);
+                                graph.addEdge(writeNode, node, new Edge<>(Edge.Type.WR, op.getVariable()));
                             }
-                        } else if (op.getValue().equals(ZERO)) {
-                            // if no write -> op, but op reads zero
-                            reads.computeIfAbsent(key, k -> new ArrayList<>()).add(op);
-                        } else {
-                            readsWithoutWrites.computeIfAbsent(key, k -> new ArrayList<>()).add(op);
+                            WREdges.computeIfAbsent(op.getVariable(), k -> new HashSet<>()).add(new Pair<>(writeNode, node));
+                            WRNodesToOp.computeIfAbsent(new Pair<>(writeNode, node), wr -> new ArrayList<>()).add(new Pair<>(write, op));
                         }
+                    } else if (op.getValue().equals(ZERO)) {
+                        // if no write -> op, but op reads zero
+                        reads.computeIfAbsent(key, k -> new ArrayList<>()).add(op);
+                    } else {
+                        readsWithoutWrites.computeIfAbsent(key, k -> new ArrayList<>()).add(op);
                     }
                 } else {
                     // if op is a write
@@ -127,7 +125,6 @@ public class PlumeList<VarType> extends Plume<VarType, ElleHistoryLoader.ElleVal
                         // ignore write 0
                         continue;
                     }
-                    var key = new Pair<>(op.getVariable(), op.getValue());
                     writes.put(key, op);
                     writeNodes.computeIfAbsent(op.getVariable(), k -> new HashSet<>()).add(node);
 
@@ -266,8 +263,8 @@ public class PlumeList<VarType> extends Plume<VarType, ElleHistoryLoader.ElleVal
                     }
 
                     if (!writeNode.equals(node)) {
-                        // in different txn
-                        if (internalWrites.contains(write)) {
+                        // in different txn, and v should be the last element in the read list
+                        if (internalWrites.contains(write) && read.getValue().getLastElement().equals(v)) {
                             // find intermediate write
                             findTAP(TAP.IntermediateRead);
                         }
